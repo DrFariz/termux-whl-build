@@ -29,10 +29,9 @@ jobs:
     - name: Build wheel using dockcross
       run: |
         ./dockcross-aarch64.sh bash -c "\
-          yum install -y python3-devel python3-pip \
-                         gcc gcc-c++ make cmake zeromq-devel \
-          && pip3 install --upgrade pip wheel cython \
-          && python3 setup.py bdist_wheel \
+          yum install -y ... \
+          && pip3 install ... \
+          && cd /work && python3 setup.py bdist_wheel \
           && mkdir -p /output && cp dist/*.whl /output/"
 
     - name: Upload wheel as artifact
