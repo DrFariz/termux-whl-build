@@ -32,13 +32,13 @@ jobs:
           yum update -y \
           && yum install -y epel-release \
           && yum install -y gcc gcc-c++ make \
-          python3 python3-devel python3-setuptools python3-wheel \
+             python3 python3-devel python3-setuptools python3-wheel \
              zeromq zeromq-devel \
              which \
           && python3 -m ensurepip \
           && python3 -m pip install --upgrade pip \
-          && pip3 install cython \
-          && cd /work && python3 setup.py bdist_wheel \
+          && pip3 install build cython \
+          && cd /work && python3 -m build --wheel \
           && mkdir -p /output && cp dist/*.whl /output/"
 
     - name: Upload wheel as artifact
