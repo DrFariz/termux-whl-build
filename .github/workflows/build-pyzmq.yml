@@ -1,0 +1,42 @@
+name: Build PyZMQ for Termux (ARM64)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-pyzmq-arm64:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout PyZMQ Source
+      uses: actions/checkout@v4
+      with:
+        repository: zeromq/pyzmq
+        ref: v26.4.0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Pull Cross-Compiler
+      run: docker pull dockcross/manylinux2014-aarch64
+
+    - name: Generate dockcross script
+      run: docker run --rm dockcross/manylinux2014-aarch64 > ./dockcross-aarch64.sh
+
+    - name: Make script executable
+      run: chmod +x ./dockcross-aarch64.sh
+
+    - name: Build wheel using dockcross
+      run: |
+        ./dockcross-aarch64.sh bash -c "\
+          yum install -y python3-devel python3-pip \
+                         gcc gcc-c++ make cmake zeromq-devel \
+          && pip3 install --upgrade pip wheel cython \
+          && python3 setup.py bdist_wheel \
+          && mkdir -p /output && cp dist/*.whl /output/"
+
+    - name: Upload wheel as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: pyzmq-arm64-wheel
+        path: ./dist/*.whl
